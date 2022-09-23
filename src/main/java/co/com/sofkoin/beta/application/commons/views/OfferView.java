@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OfferView {
+public class OfferView extends View{
     private String offerId;
     private String publisherId;
     private String targetAudienceId;

@@ -10,7 +10,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarketView {
+public class MarketView extends View {
     @Id
     private String marketId;
     private Set<OfferView> offers;

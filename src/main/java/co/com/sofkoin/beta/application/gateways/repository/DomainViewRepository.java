@@ -8,7 +8,6 @@ import reactor.core.publisher.Mono;
 public interface DomainViewRepository {
     Flux<UserView> findAllUsers();
     Mono<UserView> findByUserId(String userId);
-    Mono<UserView> findByUserEmail(String userId);
     Mono<UserView> saveUserView(UserView user);
 
     Flux<MarketView> findAllMarkets();

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityView {
+public class ActivityView extends View {
     private String activityId;
     private LocalDateTime timestamp;
     private String type;

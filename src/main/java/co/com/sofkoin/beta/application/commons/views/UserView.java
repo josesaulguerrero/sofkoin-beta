@@ -10,7 +10,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserView {
+public class UserView extends View {
     @Id
     private String userId;
     private String email;

@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageView {
+public class MessageView extends View {
     private String messageId;
     private String status;
     private String senderId;

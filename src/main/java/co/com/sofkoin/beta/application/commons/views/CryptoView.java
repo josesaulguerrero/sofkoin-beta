@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CryptoView {
+public class CryptoView extends View {
     private String symbol;
     private Double amount;
 }

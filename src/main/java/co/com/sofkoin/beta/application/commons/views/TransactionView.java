@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionView {
+public class TransactionView extends View {
     private String transactionId;
     private String type;
     private String CryptoSymbol;
