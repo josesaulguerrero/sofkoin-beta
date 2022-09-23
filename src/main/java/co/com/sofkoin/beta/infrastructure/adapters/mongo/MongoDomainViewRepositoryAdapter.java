@@ -14,40 +14,31 @@ import reactor.core.publisher.Mono;
 @Repository
 @AllArgsConstructor
 public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
+    private static final String VIEWS_COLLECTION = "views";
 
-  private static final String VIEWS_COLLECTION = "views";
+    private final ReactiveMongoTemplate mongoTemplate;
 
-  private final ReactiveMongoTemplate template;
+    @Override
+    public Mono<UserView> saveUserView(UserView user) {
+        return this.mongoTemplate
+                .save(user, VIEWS_COLLECTION);
+    }
 
-  @Override
-  public Flux<UserView> findAllUsers() {
-    return template.findAll(UserView.class, VIEWS_COLLECTION);
-  }
+    @Override
+    public Mono<MarketView> saveMarketView(MarketView market) {
+        return this.mongoTemplate
+                .save(market, VIEWS_COLLECTION);
+    }
 
-  @Override
-  public Mono<UserView> findByUserId(String userId) {
-    return Mono.just(userId)
-            .map(id -> new Query(Criteria.where("userId").is(id)))
-            .flatMap(query -> template.findOne(query, UserView.class, VIEWS_COLLECTION));
-  }
+    @Override
+    public Flux<UserView> findAllUsers() {
+        return this.mongoTemplate.findAll(UserView.class, VIEWS_COLLECTION);
+    }
 
-  @Override
-  public Mono<UserView> saveUserView(UserView user) {
-    return null;
-  }
-
-  @Override
-  public Flux<MarketView> findAllMarkets() {
-    return null;
-  }
-
-  @Override
-  public Mono<MarketView> findMarketById(String marketId) {
-    return null;
-  }
-
-  @Override
-  public Mono<MarketView> saveMarketView(MarketView market) {
-    return null;
-  }
+    @Override
+    public Mono<UserView> findByUserId(String userId) {
+        return Mono.just(userId)
+                .map(id -> new Query(Criteria.where("userId").is(id)))
+                .flatMap(query -> this.mongoTemplate.findOne(query, UserView.class, VIEWS_COLLECTION));
+    }
 }
