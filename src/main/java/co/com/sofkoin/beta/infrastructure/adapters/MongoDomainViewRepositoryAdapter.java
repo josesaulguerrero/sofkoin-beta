@@ -39,7 +39,7 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
   }
 
   @Override
-  public Flux<MarketView> findMarketById(String marketId) {
+  public Mono<MarketView> findMarketById(String marketId) {
     return null;
   }
 
