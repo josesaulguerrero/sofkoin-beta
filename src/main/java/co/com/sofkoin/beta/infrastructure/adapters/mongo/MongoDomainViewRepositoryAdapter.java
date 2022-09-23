@@ -1,4 +1,4 @@
-package co.com.sofkoin.beta.infrastructure.adapters;
+package co.com.sofkoin.beta.infrastructure.adapters.mongo;
 
 import co.com.sofkoin.beta.application.commons.views.MarketView;
 import co.com.sofkoin.beta.application.commons.views.UserView;
@@ -14,18 +14,21 @@ import reactor.core.publisher.Mono;
 @Repository
 @AllArgsConstructor
 public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
+
+  private static final String VIEWS_COLLECTION = "views";
+
   private final ReactiveMongoTemplate template;
 
   @Override
   public Flux<UserView> findAllUsers() {
-    return template.findAll(UserView.class);
+    return template.findAll(UserView.class, VIEWS_COLLECTION);
   }
 
   @Override
   public Mono<UserView> findByUserId(String userId) {
     return Mono.just(userId)
             .map(id -> new Query(Criteria.where("userId").is(id)))
-            .flatMap(query -> template.findOne(query, UserView.class));
+            .flatMap(query -> template.findOne(query, UserView.class, VIEWS_COLLECTION));
   }
 
   @Override

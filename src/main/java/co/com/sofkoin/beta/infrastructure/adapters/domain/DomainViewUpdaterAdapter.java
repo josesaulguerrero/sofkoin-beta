@@ -1,4 +1,4 @@
-package co.com.sofkoin.beta.infrastructure.adapters;
+package co.com.sofkoin.beta.infrastructure.adapters.domain;
 
 import co.com.sofkoin.beta.application.gateways.bus.DomainViewBus;
 import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
