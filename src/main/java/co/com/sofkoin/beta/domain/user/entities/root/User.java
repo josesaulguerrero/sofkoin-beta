@@ -129,13 +129,12 @@ public class User extends AggregateEvent<UserID> {
                 .apply();
     }
 
-    public void logIn(UserID userId, Email email, Password password, AuthMethod loginMethod, String jwt) {
+    public void logIn(UserID userId, Email email, AuthMethod loginMethod, String jwt) {
         super
                 .appendChange(
                         new UserLoggedIn(
                                 userId.value(),
                                 email.value(),
-                                password.value(),
                                 loginMethod.name(),
                                 jwt
                         )
