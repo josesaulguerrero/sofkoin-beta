@@ -1,7 +1,7 @@
 package co.com.sofkoin.beta.application.gateways.repository;
 
-import co.com.sofkoin.beta.application.gateways.repository.views.MarketView;
-import co.com.sofkoin.beta.application.gateways.repository.views.UserView;
+import co.com.sofkoin.beta.application.commons.views.MarketView;
+import co.com.sofkoin.beta.application.commons.views.UserView;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

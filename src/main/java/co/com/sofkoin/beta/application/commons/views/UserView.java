@@ -1,4 +1,4 @@
-package co.com.sofkoin.beta.application.gateways.repository.views;
+package co.com.sofkoin.beta.application.commons.views;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
