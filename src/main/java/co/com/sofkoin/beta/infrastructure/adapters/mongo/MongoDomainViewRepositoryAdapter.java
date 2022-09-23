@@ -39,4 +39,21 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
                 .map(id -> new Query(Criteria.where("userId").is(id)))
                 .flatMap(query -> this.mongoTemplate.findOne(query, UserView.class, VIEWS_COLLECTION));
     }
+
+    @Override
+    public Flux<MarketView> findAllMarkets() {
+        return mongoTemplate.findAll(MarketView.class, VIEWS_COLLECTION)
+                .switchIfEmpty(Mono.defer(() ->
+                        Mono.error(new Throwable("Failed to return markets"))));
+    }
+
+    @Override
+    public Mono<MarketView> findMarketById(String marketId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("marketId").is(marketId));
+        return mongoTemplate.findOne(query, MarketView.class, VIEWS_COLLECTION)
+                .switchIfEmpty(Mono.defer(() ->
+                        Mono.error(new Throwable("Market id: " + marketId + " not found."))));
+    }
+
 }
