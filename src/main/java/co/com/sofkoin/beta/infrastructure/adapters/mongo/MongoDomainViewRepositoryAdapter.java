@@ -17,8 +17,6 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
     private static final String VIEWS_COLLECTION = "views";
 
     private final ReactiveMongoTemplate mongoTemplate;
-
-    @Override
     public Mono<UserView> saveUserView(UserView user) {
         return this.mongoTemplate
                 .save(user, VIEWS_COLLECTION);
