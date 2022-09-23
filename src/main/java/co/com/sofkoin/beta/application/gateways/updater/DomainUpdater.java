@@ -9,10 +9,7 @@ import java.util.function.Consumer;
 public abstract class DomainUpdater {
   protected Set<Consumer<? super DomainEvent>> listeners = new HashSet<>();
 
-  public DomainUpdater() {
-  }
-
-  protected void updater(Consumer<? extends DomainEvent> changeEvent) {
+  protected void addUpdater(Consumer<? extends DomainEvent> changeEvent) {
     this.listeners.add((Consumer<? super DomainEvent>) changeEvent);
   }
 

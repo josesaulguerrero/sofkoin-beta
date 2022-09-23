@@ -41,6 +41,7 @@ public class Market extends AggregateEvent<MarketID> {
     }
 
     public void publishP2POffer(OfferId offerId,
+                                MarketID marketId,
                                 UserID publisherId,
                                 CryptoSymbol cryptoSymbol,
                                 OfferCryptoAmount cryptoAmount,
@@ -48,12 +49,13 @@ public class Market extends AggregateEvent<MarketID> {
                                 UserID targetAudienceId)
     {
         super.appendChange(new P2POfferPublished(offerId.value(),
+                marketId.value(),
                 publisherId.value(), cryptoSymbol.value(),
                 cryptoAmount.value(), cryptoPrice.value(), targetAudienceId.value())).apply();
     }
 
-    public void deleteP2POffer(OfferId offerId){
-        super.appendChange(new P2POfferDeleted(offerId.value())).apply();
+    public void deleteP2POffer(OfferId offerId, MarketID marketId){
+        super.appendChange(new P2POfferDeleted(offerId.value(), marketId.value())).apply();
     }
 
     public Optional<Offer> getOfferByID(OfferId offerId){
