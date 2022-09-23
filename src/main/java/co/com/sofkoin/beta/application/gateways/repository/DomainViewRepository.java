@@ -11,6 +11,6 @@ public interface DomainViewRepository {
     Mono<UserView> saveUserView(UserView user);
 
     Flux<MarketView> findAllMarkets();
-    Flux<MarketView> findMarketById(String marketId);
+    Mono<MarketView> findMarketById(String marketId);
     Mono<MarketView> saveMarketView(MarketView market);
 }
