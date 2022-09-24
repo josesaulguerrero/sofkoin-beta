@@ -4,8 +4,10 @@ import co.com.sofkoin.beta.application.commons.usecases.UseCase;
 import co.com.sofkoin.beta.application.commons.views.MarketView;
 import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+@Service
 @AllArgsConstructor
 public class FindMarketByIdUseCase implements UseCase<String, MarketView> {
 
