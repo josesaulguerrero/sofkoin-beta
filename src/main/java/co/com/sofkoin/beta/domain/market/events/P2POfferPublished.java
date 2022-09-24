@@ -10,6 +10,7 @@ import lombok.ToString;
 @ToString
 public class P2POfferPublished extends DomainEvent {
     private String offerId;
+    private String marketId;
     private String publisherId;
     private String cryptoSymbol;
     private Double cryptoAmount;
@@ -22,6 +23,7 @@ public class P2POfferPublished extends DomainEvent {
     }
 
     public P2POfferPublished(String offerId,
+                             String marketId,
                              String publisherId,
                              String cryptoSymbol,
                              Double cryptoAmount,
@@ -30,6 +32,7 @@ public class P2POfferPublished extends DomainEvent {
     {
         super(P2POfferPublished.class.getName());
         this.offerId = offerId;
+        this.marketId = marketId;
         this.publisherId = publisherId;
         this.cryptoSymbol = cryptoSymbol;
         this.cryptoAmount = cryptoAmount;
