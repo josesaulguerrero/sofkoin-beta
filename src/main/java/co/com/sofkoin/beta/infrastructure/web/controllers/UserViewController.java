@@ -26,7 +26,7 @@ public class UserViewController {
     public ResponseEntity<Mono<UserDashboardView>> findUserById(@PathVariable String id) {
         return new ResponseEntity<>(
                 this.findUserByIdUseCase.apply(Mono.just(id)),
-                HttpStatus.CREATED
+                HttpStatus.OK
         );
     }
 
@@ -34,7 +34,7 @@ public class UserViewController {
     public ResponseEntity<Flux<UserDBView>> findAllUsers() {
         return new ResponseEntity<>(
                 this.findAllUsersUseCase.get(),
-                HttpStatus.CREATED
+                HttpStatus.OK
         );
     }
 

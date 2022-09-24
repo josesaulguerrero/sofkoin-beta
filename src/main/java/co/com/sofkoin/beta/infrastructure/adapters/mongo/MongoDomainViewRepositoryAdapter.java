@@ -45,7 +45,7 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
     public Flux<MarketView> findAllMarkets() {
         return mongoTemplate.findAll(MarketView.class, MARKET_VIEWS_COLLECTION)
                 .switchIfEmpty(Mono.defer(() ->
-                        Mono.error(new Throwable("Failed to return markets"))));
+                        Mono.error(new IllegalStateException("Failed to return markets"))));
     }
 
     @Override
@@ -54,7 +54,7 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
         query.addCriteria(Criteria.where("marketId").is(marketId));
         return mongoTemplate.findOne(query, MarketView.class, MARKET_VIEWS_COLLECTION)
                 .switchIfEmpty(Mono.defer(() ->
-                        Mono.error(new Throwable("Market id: " + marketId + " not found."))));
+                        Mono.error(new IllegalArgumentException("Market id: " + marketId + " not found."))));
     }
 
 }

@@ -26,7 +26,7 @@ public class MarketViewController {
     public ResponseEntity<Mono<MarketView>> getMarketById(@PathVariable String id) {
         return new ResponseEntity<>(
                 this.findByMarketByIdUseCase.apply(Mono.just(id)),
-                HttpStatus.CREATED
+                HttpStatus.OK
         );
     }
 
@@ -34,7 +34,7 @@ public class MarketViewController {
     public ResponseEntity<Flux<MarketView>> getAllMarkets() {
         return new ResponseEntity<>(
                 this.findAllMarketsUseCase.get(),
-                HttpStatus.CREATED
+                HttpStatus.OK
         );
     }
 
