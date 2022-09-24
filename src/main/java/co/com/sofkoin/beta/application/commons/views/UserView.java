@@ -1,5 +1,6 @@
 package co.com.sofkoin.beta.application.commons.views;
 
+import co.com.sofkoin.beta.domain.user.values.Cash;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 
@@ -23,4 +24,19 @@ public class UserView extends View {
     private Set<CryptoView> cryptos;
     private Set<ActivityView> activities;
     private Set<TransactionView> transactions;
+
+
+    public void increaseCashBalance(Double cash) {
+        this.currentCash += cash;
+    }
+
+    public void decreaseCashBalance(Double cash) {
+        this.currentCash -= cash;
+    }
+
+    public CryptoView getCrypto(String cryptoSymbol) {
+        return this.getCryptos().stream()
+            .filter(crypto -> crypto.getSymbol().equals(cryptoSymbol))
+            .findFirst().get();
+    }
 }
