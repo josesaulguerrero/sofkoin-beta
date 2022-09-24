@@ -1,7 +1,7 @@
 package co.com.sofkoin.beta.infrastructure.adapters.mongo;
 
 import co.com.sofkoin.beta.application.commons.views.MarketView;
-import co.com.sofkoin.beta.application.commons.views.UserView;
+import co.com.sofkoin.beta.application.commons.views.UserDBView;
 import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -17,7 +17,7 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
     private static final String VIEWS_COLLECTION = "views";
 
     private final ReactiveMongoTemplate mongoTemplate;
-    public Mono<UserView> saveUserView(UserView user) {
+    public Mono<UserDBView> saveUserView(UserDBView user) {
         return this.mongoTemplate
                 .save(user, VIEWS_COLLECTION);
     }
@@ -29,15 +29,15 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
     }
 
     @Override
-    public Flux<UserView> findAllUsers() {
-        return this.mongoTemplate.findAll(UserView.class, VIEWS_COLLECTION);
+    public Flux<UserDBView> findAllUsers() {
+        return this.mongoTemplate.findAll(UserDBView.class, VIEWS_COLLECTION);
     }
 
     @Override
-    public Mono<UserView> findByUserId(String userId) {
+    public Mono<UserDBView> findByUserId(String userId) {
         return Mono.just(userId)
                 .map(id -> new Query(Criteria.where("userId").is(id)))
-                .flatMap(query -> this.mongoTemplate.findOne(query, UserView.class, VIEWS_COLLECTION));
+                .flatMap(query -> this.mongoTemplate.findOne(query, UserDBView.class, VIEWS_COLLECTION));
     }
 
     @Override

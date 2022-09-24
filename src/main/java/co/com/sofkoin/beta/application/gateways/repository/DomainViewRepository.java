@@ -1,14 +1,14 @@
 package co.com.sofkoin.beta.application.gateways.repository;
 
 import co.com.sofkoin.beta.application.commons.views.MarketView;
-import co.com.sofkoin.beta.application.commons.views.UserView;
+import co.com.sofkoin.beta.application.commons.views.UserDBView;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface DomainViewRepository {
-    Flux<UserView> findAllUsers();
-    Mono<UserView> findByUserId(String userId);
-    Mono<UserView> saveUserView(UserView user);
+    Flux<UserDBView> findAllUsers();
+    Mono<UserDBView> findByUserId(String userId);
+    Mono<UserDBView> saveUserView(UserDBView user);
 
     Flux<MarketView> findAllMarkets();
     Mono<MarketView> findMarketById(String marketId);

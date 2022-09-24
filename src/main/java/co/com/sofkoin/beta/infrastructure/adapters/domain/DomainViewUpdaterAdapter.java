@@ -5,7 +5,6 @@ import co.com.sofkoin.beta.application.gateways.bus.DomainViewBus;
 import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
 import co.com.sofkoin.beta.application.gateways.updater.DomainUpdater;
 import co.com.sofkoin.beta.domain.market.events.P2POfferPublished;
-import co.com.sofkoin.beta.domain.user.entities.Transaction;
 import co.com.sofkoin.beta.domain.user.events.*;
 import co.com.sofkoin.beta.domain.user.values.MessageStatus;
 import co.com.sofkoin.beta.domain.user.values.Timestamp;
@@ -13,7 +12,6 @@ import co.com.sofkoin.beta.domain.user.values.TransactionTypes;
 import co.com.sofkoin.beta.domain.user.values.identities.TransactionID;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-
 import java.util.Collections;
 
 @Service
@@ -28,7 +26,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
 
     super.addUpdater((UserSignedUp event) ->
             Mono.just(event)
-            .map(ev -> new UserView(
+            .map(ev -> new UserDBView(
                     ev.getUserId(),
                     ev.getEmail(),
                     ev.getName() + " " + ev.getSurname(),
@@ -216,4 +214,5 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
           .doOnNext(u -> viewBus.publishMessageSavedEvent(messageView));
       });
   }
+
 }
