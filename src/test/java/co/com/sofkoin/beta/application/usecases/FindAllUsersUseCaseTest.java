@@ -1,6 +1,6 @@
 package co.com.sofkoin.beta.application.usecases;
 
-import co.com.sofkoin.beta.application.commons.views.UserView;
+import co.com.sofkoin.beta.application.commons.views.UserDBView;
 import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class FindAllUsersUseCaseTest {
 
   @Test
   void findUserByUseCase() {
-    UserView userView = new UserView(
+    UserDBView userDBView = new UserDBView(
             "123812",
             "mail@mail.com",
             "Jose David",
@@ -42,26 +42,26 @@ class FindAllUsersUseCaseTest {
             Collections.emptySet()
     );
 
-    UserView userView1 = new UserView();
-    UserView userView2 = new UserView();
-    UserView userView3 = new UserView();
+    UserDBView userDBView1 = new UserDBView();
+    UserDBView userDBView2 = new UserDBView();
+    UserDBView userDBView3 = new UserDBView();
 
     BDDMockito
             .when(repository.findAllUsers())
-            .thenReturn(Flux.just(userView, userView1, userView2, userView3));
+            .thenReturn(Flux.just(userDBView, userDBView1, userDBView2, userDBView3));
 
-    Mono<List<UserView>> usersFound = useCase.get().collectList();
+    Mono<List<UserDBView>> usersFound = useCase.get().collectList();
 
     StepVerifier
             .create(usersFound)
             .expectSubscription()
             .assertNext(users -> {
-              UserView firstUser = users.get(0);
+              UserDBView firstUser = users.get(0);
 
               assertEquals(4, users.size());
-              assertEquals(userView.getUserId(), firstUser.getUserId());
-              assertEquals(userView.getEmail(), firstUser.getEmail());
-              assertEquals(userView.getFullName(), firstUser.getFullName());
+              assertEquals(userDBView.getUserId(), firstUser.getUserId());
+              assertEquals(userDBView.getEmail(), firstUser.getEmail());
+              assertEquals(userDBView.getFullName(), firstUser.getFullName());
             })
             .expectComplete()
             .log()

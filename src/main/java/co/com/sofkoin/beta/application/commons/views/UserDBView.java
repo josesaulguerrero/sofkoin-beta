@@ -1,6 +1,5 @@
 package co.com.sofkoin.beta.application.commons.views;
 
-import co.com.sofkoin.beta.domain.user.values.Cash;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 
@@ -11,7 +10,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserView extends View {
+public class UserDBView extends View {
     @Id
     private String userId;
     private String email;
