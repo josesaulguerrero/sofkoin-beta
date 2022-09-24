@@ -1,8 +1,10 @@
 package co.com.sofkoin.beta.application.commons.views;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import java.util.Set;
 
+@Data
 @AllArgsConstructor
 public class UserDashboardView extends View{
 

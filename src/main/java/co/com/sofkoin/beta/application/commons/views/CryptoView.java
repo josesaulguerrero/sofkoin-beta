@@ -8,8 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CryptoView extends View {
-    private String symbol;
-    private Double amount;
+
+    protected String symbol;
+    protected Double amount;
 
     public void increaseCryptoAmount(Double cryptoAmount) {
         this.amount += cryptoAmount;
