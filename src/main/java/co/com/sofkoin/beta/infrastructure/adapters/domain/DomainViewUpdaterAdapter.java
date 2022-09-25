@@ -5,6 +5,7 @@ import co.com.sofkoin.beta.application.gateways.bus.DomainViewBus;
 import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
 import co.com.sofkoin.beta.application.gateways.updater.DomainUpdater;
 import co.com.sofkoin.beta.domain.market.events.MarketCreated;
+import co.com.sofkoin.beta.domain.market.events.P2POfferDeleted;
 import co.com.sofkoin.beta.domain.market.events.P2POfferPublished;
 import co.com.sofkoin.beta.domain.user.events.*;
 import co.com.sofkoin.beta.domain.user.values.ActivityTypes;
@@ -78,6 +79,21 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                             commitP2PTransaction(ev, ev.getSellerId(), TransactionTypes.SELL);
                         }).subscribe());
 
+        super.addUpdater((P2POfferDeleted event) -> {
+            Mono.just(event)
+                    .flatMap(ev -> {
+                        return this.repository.findMarketById(ev.getMarketId())
+                                .flatMap(market -> {
+                                    OfferView offerView = market.findOfferById(ev.getOfferId());
+                                    market.deleteP2POfferById(ev.getOfferId());
+                                    return this.repository.saveMarketView(market)
+                                            .thenReturn(offerView);
+                                })
+                                .doOnNext(this.viewBus::publishP2POfferDeletedEvent);
+                    })
+                    .subscribe();
+        });
+
         super.addUpdater((OfferMessageSaved event) ->
                 Mono.just(event)
                         .doOnNext(ev -> {
@@ -118,8 +134,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                                                 userView.increaseCashBalance(ev.getCash());
                                             }
 
-
-                                            userView.getTransactions().add(transactionView);
+                                            userView.addTransaction(transactionView);
 
                                             return userView;
                                         })
@@ -180,27 +195,28 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
     private void commitP2PTransaction(P2PTransactionCommitted ev, String userId, TransactionTypes transactionType) {
         repository
                 .findByUserId(userId)
-                .map(user -> {
+                .flatMap(user -> {
                     TransactionView transactionView = new TransactionView(
                             ev.getTransactionId(),
                             ev.getTransactionType(),
                             ev.getCryptoSymbol(),
                             ev.getCryptoAmount(),
                             ev.getCryptoPrice(),
-                            LocalDateTime.parse(ev.getTimestamp()));
-
-                    user.getTransactions().add(transactionView);
+                            LocalDateTime.parse(ev.getTimestamp())
+                    );
 
                     CryptoView cryptoView =
                             user.getCrypto(ev.getCryptoSymbol());
 
-                    if (transactionType == TransactionTypes.BUY) {
+                    if (TransactionTypes.BUY.equals(transactionType)) {
                         user.decreaseCashBalance(ev.getCash());
                         cryptoView.increaseCryptoAmount(ev.getCryptoAmount());
                     } else {
                         user.increaseCashBalance(ev.getCash());
                         cryptoView.decreaseCryptoAmount(ev.getCryptoAmount());
                     }
+
+                    user.addTransaction(transactionView);
 
                     return
                             Mono.just(user)

@@ -13,10 +13,10 @@ public class CryptoView extends View {
     protected Double amount;
 
     public void increaseCryptoAmount(Double cryptoAmount) {
-        this.amount += cryptoAmount;
+        this.amount = Double.sum(cryptoAmount, this.amount);
     }
 
     public void decreaseCryptoAmount(Double cryptoAmount) {
-        this.amount -= cryptoAmount;
+        this.amount = this.amount - cryptoAmount;
     }
 }
