@@ -36,6 +36,10 @@ public class UserDBView extends View {
     public CryptoView getCrypto(String cryptoSymbol) {
         return this.getCryptos().stream()
             .filter(crypto -> crypto.getSymbol().equals(cryptoSymbol))
-            .findFirst().get();
+            .findFirst().orElseGet(()-> {
+                    CryptoView cryptoView = new CryptoView(cryptoSymbol, 0.0);
+                    this.cryptos.add(cryptoView);
+                    return cryptoView;
+                });
     }
 }

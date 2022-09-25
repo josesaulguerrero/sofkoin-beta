@@ -21,7 +21,7 @@ public class CryptoViewController {
     public ResponseEntity<Mono<RestCryptoResponse>> getCryptosPrice() {
         return new ResponseEntity<>(
                 this.getCryptoPriceUseCase.get(),
-                HttpStatus.CREATED
+                HttpStatus.OK
         );
     }
 
