@@ -7,6 +7,7 @@ import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,9 +33,13 @@ public class FindUserByIdUseCase implements UseCase<String, UserDashboardView> {
                                         var cryptoSymbol = cryptoView.getSymbol();
 
                                         Double pricePerCrypto = cryptoResponse.get(cryptoSymbol).get("USD");
-                                        cryptoPriceViews.add(new CryptoPriceView(cryptoSymbol,
-                                                cryptoAmount,
-                                                CryptoPriceView.calculateCurrenPrice(cryptoAmount, pricePerCrypto)));
+                                        cryptoPriceViews.add(
+                                                new CryptoPriceView(
+                                                        cryptoSymbol,
+                                                        cryptoAmount,
+                                                        CryptoPriceView.calculateCurrenPrice(cryptoAmount, pricePerCrypto)
+                                                )
+                                        );
                                     });
 
                                     return new UserDashboardView(
