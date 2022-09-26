@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
+
 @Repository
 @AllArgsConstructor
 public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
@@ -31,21 +33,25 @@ public class MongoDomainViewRepositoryAdapter implements DomainViewRepository {
 
     @Override
     public Flux<UserDBView> findAllUsers() {
-        return this.mongoTemplate.findAll(UserDBView.class, USERS_VIEWS_COLLECTION);
+        return this.mongoTemplate.findAll(UserDBView.class, USERS_VIEWS_COLLECTION)
+        .switchIfEmpty(Mono.defer(() ->
+                Mono.error(new IllegalStateException("There are not users to be returned"))));
     }
 
     @Override
     public Mono<UserDBView> findByUserId(String userId) {
         return Mono.just(userId)
                 .map(id -> new Query(Criteria.where("userId").is(id)))
-                .flatMap(query -> this.mongoTemplate.findOne(query, UserDBView.class, USERS_VIEWS_COLLECTION));
+                .flatMap(query -> this.mongoTemplate.findOne(query, UserDBView.class, USERS_VIEWS_COLLECTION))
+                .switchIfEmpty(Mono.defer(() ->
+                        Mono.error(new IllegalArgumentException("Use id: " + userId + " not found."))));
     }
 
     @Override
     public Flux<MarketView> findAllMarkets() {
         return mongoTemplate.findAll(MarketView.class, MARKET_VIEWS_COLLECTION)
                 .switchIfEmpty(Mono.defer(() ->
-                        Mono.error(new IllegalStateException("Failed to return markets"))));
+                        Mono.error(new IllegalStateException("There are not market to be returned"))));
     }
 
     @Override
