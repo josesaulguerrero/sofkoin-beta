@@ -47,4 +47,8 @@ public class UserDBView extends View {
     public void addTransaction(TransactionView transactionView) {
         this.transactions.add(transactionView);
     }
+
+    public void addMessage(MessageView messageView) {
+        this.messages.add(messageView);
+    }
 }
