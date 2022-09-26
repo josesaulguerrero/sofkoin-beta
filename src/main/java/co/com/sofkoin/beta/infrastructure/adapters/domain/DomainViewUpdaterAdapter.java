@@ -112,8 +112,15 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
         super.addUpdater((MessageStatusChanged event) ->
                 Mono.just(event)
                         .doOnNext(ev -> {
-                            changeMessageStatus(ev, ev.getReceiverId());
-                            changeMessageStatus(ev, ev.getSenderId());
+                            MessageRelationTypes messageRelationType =
+                                    MessageRelationTypes.valueOf(ev.getMessageRelationType().toUpperCase(Locale.ROOT).trim());
+                            if (messageRelationType.equals(MessageRelationTypes.RECEIVER)) {
+                                changeMessageStatus(ev, ev.getReceiverId());
+                            } else if (messageRelationType.equals(MessageRelationTypes.SENDER)) {
+                                changeMessageStatus(ev, ev.getSenderId());
+                            } else {
+                                throw new IllegalArgumentException("The message relation type is not supported.");
+                            }
                         }).subscribe());
 
         super.addUpdater((TradeTransactionCommitted event) ->
@@ -241,7 +248,8 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                     MessageView message =
                             user.getMessages().stream()
                                     .filter(messageView -> messageView.getMessageId().equals(ev.getMessageId()))
-                                    .findFirst().get();
+                                    .findFirst()
+                                    .orElseThrow(() -> new IllegalArgumentException("The message was not found in this user."));
 
                     message.setStatus(ev.getNewStatus());
 
