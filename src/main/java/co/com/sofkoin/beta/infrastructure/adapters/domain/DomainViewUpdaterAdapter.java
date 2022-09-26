@@ -270,6 +270,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                             event.getSenderId(),
                             event.getMarketId(),
                             event.getReceiverId(),
+                            event.getMessageRelationType(),
                             event.getCryptoAmount(),
                             event.getCryptoPrice(),
                             event.getCryptoSymbol()

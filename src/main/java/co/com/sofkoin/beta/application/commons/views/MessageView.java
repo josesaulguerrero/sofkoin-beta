@@ -13,6 +13,7 @@ public class MessageView extends View {
     private String senderId;
     private String marketId;
     private String receiverId;
+    private String messageRelationType;
     private Double proposalCryptoAmount;
     private Double proposalCryptoPrice;
     private String proposalCryptoSymbol;
