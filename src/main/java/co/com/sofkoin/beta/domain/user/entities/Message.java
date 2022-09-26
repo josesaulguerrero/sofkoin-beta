@@ -4,6 +4,7 @@ import co.com.sofka.domain.generic.Entity;
 import co.com.sofkoin.beta.domain.common.values.CryptoSymbol;
 import co.com.sofkoin.beta.domain.common.values.identities.UserID;
 import co.com.sofkoin.beta.domain.market.values.identities.MarketID;
+import co.com.sofkoin.beta.domain.user.values.MessageRelationTypes;
 import co.com.sofkoin.beta.domain.user.values.MessageStatus;
 import co.com.sofkoin.beta.domain.user.values.ProposalCryptoAmount;
 import co.com.sofkoin.beta.domain.user.values.ProposalCryptoPrice;
@@ -17,23 +18,25 @@ public class Message extends Entity<MessageID> {
 
     private final ProposalCryptoPrice proposalCryptoPrice;
 
-    private MessageStatus messageStatus;
-
     private final UserID senderId;
 
     private final UserID receiverId;
 
+    private final MessageRelationTypes messageRelationType;
+
     private final CryptoSymbol cryptoSymbol;
+    private MessageStatus messageStatus;
 
     public Message(MessageID entityId, MarketID marketID, ProposalCryptoAmount proposalCryptoAmount,
                    ProposalCryptoPrice proposalCryptoPrice, MessageStatus messageStatus,
-                   UserID senderId, UserID receiverId, CryptoSymbol cryptoSymbol) {
+                   UserID senderId, UserID receiverId, MessageRelationTypes messageRelationTypes, CryptoSymbol cryptoSymbol) {
         super(entityId);
         this.marketID = marketID;
         this.proposalCryptoAmount = proposalCryptoAmount;
         this.proposalCryptoPrice = proposalCryptoPrice;
         this.messageStatus = messageStatus;
         this.senderId = senderId;
+        this.messageRelationType = messageRelationTypes;
         this.receiverId = receiverId;
         this.cryptoSymbol = cryptoSymbol;
     }

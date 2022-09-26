@@ -5,19 +5,19 @@ import co.com.sofkoin.beta.application.gateways.bus.DomainViewBus;
 import co.com.sofkoin.beta.application.gateways.repository.DomainViewRepository;
 import co.com.sofkoin.beta.application.gateways.updater.DomainUpdater;
 import co.com.sofkoin.beta.domain.market.events.MarketCreated;
+import co.com.sofkoin.beta.domain.market.events.P2POfferDeleted;
 import co.com.sofkoin.beta.domain.market.events.P2POfferPublished;
 import co.com.sofkoin.beta.domain.user.events.*;
-import co.com.sofkoin.beta.domain.user.values.ActivityTypes;
-import co.com.sofkoin.beta.domain.user.values.MessageStatus;
-import co.com.sofkoin.beta.domain.user.values.Timestamp;
-import co.com.sofkoin.beta.domain.user.values.TransactionTypes;
+import co.com.sofkoin.beta.domain.user.values.*;
 import co.com.sofkoin.beta.domain.user.values.identities.ActivityID;
 import co.com.sofkoin.beta.domain.user.values.identities.TransactionID;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 
 @Service
 public class DomainViewUpdaterAdapter extends DomainUpdater {
@@ -78,12 +78,36 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                             commitP2PTransaction(ev, ev.getSellerId(), TransactionTypes.SELL);
                         }).subscribe());
 
+        super.addUpdater((P2POfferDeleted event) -> {
+            Mono.just(event)
+                    .flatMap(ev -> {
+                        return this.repository.findMarketById(ev.getMarketId())
+                                .flatMap(market -> {
+                                    OfferView offerView = market.findOfferById(ev.getOfferId());
+                                    market.deleteP2POfferById(ev.getOfferId());
+                                    return this.repository.saveMarketView(market)
+                                            .thenReturn(offerView);
+                                })
+                                .doOnNext(this.viewBus::publishP2POfferDeletedEvent);
+                    })
+                    .subscribe();
+        });
+
+        // 2 events
         super.addUpdater((OfferMessageSaved event) ->
                 Mono.just(event)
                         .doOnNext(ev -> {
-                            saveOfferMessage(ev, ev.getReceiverId());
-                            saveOfferMessage(ev, ev.getSenderId());
-                        }).subscribe());
+                            MessageRelationTypes messageRelationType =
+                                    MessageRelationTypes.valueOf(ev.getMessageRelationType().toUpperCase(Locale.ROOT).trim());
+                            if (messageRelationType.equals(MessageRelationTypes.RECEIVER)) {
+                                saveOfferMessage(ev, ev.getReceiverId());
+                            } else if (messageRelationType.equals(MessageRelationTypes.SENDER)) {
+                                saveOfferMessage(ev, ev.getSenderId());
+                            } else {
+                                throw new IllegalArgumentException("The message relation type is not supported.");
+                            }
+                        }).subscribe()
+        );
 
         super.addUpdater((MessageStatusChanged event) ->
                 Mono.just(event)
@@ -118,8 +142,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                                                 userView.increaseCashBalance(ev.getCash());
                                             }
 
-
-                                            userView.getTransactions().add(transactionView);
+                                            userView.addTransaction(transactionView);
 
                                             return userView;
                                         })
@@ -173,34 +196,36 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                             activityType
                     ));
                     return publisher;
-                }).flatMap(this.repository::saveUserView)
+                })
+                .flatMap(this.repository::saveUserView)
                 .subscribe();
     }
 
     private void commitP2PTransaction(P2PTransactionCommitted ev, String userId, TransactionTypes transactionType) {
         repository
                 .findByUserId(userId)
-                .map(user -> {
+                .flatMap(user -> {
                     TransactionView transactionView = new TransactionView(
                             ev.getTransactionId(),
                             ev.getTransactionType(),
                             ev.getCryptoSymbol(),
                             ev.getCryptoAmount(),
                             ev.getCryptoPrice(),
-                            LocalDateTime.parse(ev.getTimestamp()));
-
-                    user.getTransactions().add(transactionView);
+                            LocalDateTime.parse(ev.getTimestamp())
+                    );
 
                     CryptoView cryptoView =
                             user.getCrypto(ev.getCryptoSymbol());
 
-                    if (transactionType == TransactionTypes.BUY) {
+                    if (TransactionTypes.BUY.equals(transactionType)) {
                         user.decreaseCashBalance(ev.getCash());
                         cryptoView.increaseCryptoAmount(ev.getCryptoAmount());
                     } else {
                         user.increaseCashBalance(ev.getCash());
                         cryptoView.decreaseCryptoAmount(ev.getCryptoAmount());
                     }
+
+                    user.addTransaction(transactionView);
 
                     return
                             Mono.just(user)
@@ -212,7 +237,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
     private void changeMessageStatus(MessageStatusChanged ev, String userId) {
         repository
                 .findByUserId(userId)
-                .map(user -> {
+                .flatMap(user -> {
                     MessageView message =
                             user.getMessages().stream()
                                     .filter(messageView -> messageView.getMessageId().equals(ev.getMessageId()))
@@ -230,7 +255,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
     private void saveOfferMessage(OfferMessageSaved event, String id) {
         repository
                 .findByUserId(id)
-                .map(user -> {
+                .flatMap(user -> {
                     MessageView messageView = new MessageView(
                             event.getMessageId(),
                             MessageStatus.PENDING.name(),
@@ -241,11 +266,10 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                             event.getCryptoPrice(),
                             event.getCryptoSymbol()
                     );
-                    user.getMessages().add(messageView);
-                    return
-                            Mono.just(user)
-                                    .flatMap(repository::saveUserView)
-                                    .doOnNext(u -> viewBus.publishMessageSavedEvent(messageView));
+                    user.addMessage(messageView);
+                    return Mono.just(user)
+                            .flatMap(repository::saveUserView)
+                            .doOnNext(u -> viewBus.publishMessageSavedEvent(messageView));
                 }).subscribe();
     }
 

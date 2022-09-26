@@ -15,7 +15,6 @@ import co.com.sofkoin.beta.domain.market.values.identities.MarketID;
 import co.com.sofkoin.beta.domain.market.values.identities.OfferId;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class Market extends AggregateEvent<MarketID> {
@@ -40,6 +39,13 @@ public class Market extends AggregateEvent<MarketID> {
         return market;
     }
 
+    public Offer findOfferById(String offerId){
+        return this.offers.stream()
+                .filter(offer -> offer.identity().value().equals(offerId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("The offer with the given id does not exist."));
+    }
+
     public void publishP2POffer(OfferId offerId,
                                 MarketID marketId,
                                 UserID publisherId,
@@ -54,12 +60,8 @@ public class Market extends AggregateEvent<MarketID> {
                 cryptoAmount.value(), cryptoPrice.value(), targetAudienceId.value())).apply();
     }
 
-    public void deleteP2POffer(OfferId offerId, MarketID marketId){
-        super.appendChange(new P2POfferDeleted(offerId.value(), marketId.value())).apply();
-    }
-
-    public Optional<Offer> getOfferByID(OfferId offerId){
-        return offers.stream().filter((offer -> offer.identity().equals(offerId))).findFirst();
+    public void deleteP2POffer(OfferId offerId ){
+        super.appendChange(new P2POfferDeleted(offerId.value(), this.entityId.value())).apply();
     }
 
 }
