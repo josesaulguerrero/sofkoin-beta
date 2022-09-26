@@ -5,6 +5,7 @@ import co.com.sofka.domain.generic.DomainEvent;
 import co.com.sofkoin.beta.domain.common.values.CryptoSymbol;
 import co.com.sofkoin.beta.domain.common.values.identities.UserID;
 import co.com.sofkoin.beta.domain.market.values.identities.MarketID;
+import co.com.sofkoin.beta.domain.market.values.identities.OfferId;
 import co.com.sofkoin.beta.domain.user.entities.Activity;
 import co.com.sofkoin.beta.domain.user.entities.Message;
 import co.com.sofkoin.beta.domain.user.entities.Transaction;
@@ -39,8 +40,7 @@ public class User extends AggregateEvent<UserID> {
                 Email email,
                 Phone phone,
                 Avatar avatar,
-                AuthMethod authMethod)
-    {
+                AuthMethod authMethod) {
         super(entityId);
         super
                 .appendChange(
@@ -69,26 +69,87 @@ public class User extends AggregateEvent<UserID> {
         return user;
     }
 
-    public void changeMessageStatus(UserID receiverId, UserID senderId, MessageID messageId, MessageStatus newStatus) {
+    public Double findCryptoAmountBySymbol(String symbol) {
+        CryptoBalance crypto = this.cryptoBalances.stream().filter(cryptoBalance ->
+                cryptoBalance.value().coinSymbol().equals(symbol)
+        ).findFirst().orElseThrow(() ->
+                new IllegalArgumentException("The user doesn't have enough " + symbol + ".")
+        );
+
+        return crypto.value().amount();
+    }
+
+
+    public void validateBuyTransaction(Double cash) {
+        if (cash > this.cash.value()) {
+            throw new IllegalArgumentException("The user doesn't have enough cash to buy the given crypto.");
+        }
+        if (cash < 5.0 || cash > 100000.0) {
+            throw new IllegalArgumentException("The minimum value for a transaction is 5 USD and the maximum value is 100.000 USD.");
+        }
+    }
+
+    public Message findMessageById(String messageId) {
+        return
+                this
+                        .messages().stream()
+                        .filter(msg -> msg.identity().value().equals(messageId))
+                        .findFirst().orElseThrow(() ->
+                                new IllegalArgumentException("The message with the given ID doesn't exist in this user.")
+                        );
+    }
+
+    public void validateSellTransaction(Double transactionCryptoAmount, String cryptoSymbol) {
+        Double userCryptoAmount = this.findCryptoAmountBySymbol(cryptoSymbol);
+
+        if (transactionCryptoAmount > userCryptoAmount) {
+            throw new IllegalArgumentException("The user doesn't have enough crypto to sell to the exchange.");
+        }
+        if (transactionCryptoAmount < 0.000001 || transactionCryptoAmount > 100000.0) {
+            throw new IllegalArgumentException("The minimum value for a transaction is 0.0000001" +
+                    cryptoSymbol + " and the maximum value is 100.000" + cryptoSymbol + ".");
+        }
+    }
+
+    public void changeMessageStatus(
+            UserID receiverId,
+            UserID senderId,
+            MessageID messageId,
+            MessageRelationTypes messageRelationType,
+            MessageStatus newStatus
+    ) {
         super
                 .appendChange(
                         new MessageStatusChanged(
                                 receiverId.value(),
                                 senderId.value(),
                                 messageId.value(),
+                                messageRelationType.name(),
                                 newStatus.name()
                         )
                 )
                 .apply();
     }
 
-    public void commitP2PTransaction(TransactionID transactionID, UserID sellerId, UserID buyerId, CryptoSymbol cryptoSymbol, TransactionCryptoAmount transactionCryptoAmount, TransactionCryptoPrice transactionCryptoPrice, String transactionType, Cash cash, Timestamp timestamp) {
+    public void commitP2PTransaction(TransactionID transactionID,
+                                     UserID sellerId,
+                                     UserID buyerId,
+                                     OfferId offerId,
+                                     MarketID marketId,
+                                     CryptoSymbol cryptoSymbol,
+                                     TransactionCryptoAmount transactionCryptoAmount,
+                                     TransactionCryptoPrice transactionCryptoPrice,
+                                     String transactionType,
+                                     Cash cash,
+                                     Timestamp timestamp) {
         super
                 .appendChange(
                         new P2PTransactionCommitted(
                                 transactionID.value(),
                                 sellerId.value(),
                                 buyerId.value(),
+                                offerId.value(),
+                                marketId.value(),
                                 cryptoSymbol.value(),
                                 transactionCryptoAmount.value(),
                                 transactionCryptoPrice.value(),
@@ -155,6 +216,7 @@ public class User extends AggregateEvent<UserID> {
                                  UserID senderId,
                                  UserID receiverId,
                                  CryptoSymbol cryptoSymbol,
+                                 MessageRelationTypes messageRelationTypes,
                                  TransactionCryptoAmount cryptoAmount,
                                  TransactionCryptoPrice cryptoPrice
     ) {
@@ -166,6 +228,7 @@ public class User extends AggregateEvent<UserID> {
                                 senderId.value(),
                                 receiverId.value(),
                                 cryptoSymbol.value(),
+                                messageRelationTypes.name(),
                                 cryptoAmount.value(),
                                 cryptoPrice.value()
                         )
@@ -173,47 +236,47 @@ public class User extends AggregateEvent<UserID> {
                 .apply();
     }
 
-  public FullName fullName() {
-    return fullName;
-  }
+    public FullName fullName() {
+        return fullName;
+    }
 
-  public Password password() {
-    return password;
-  }
+    public Password password() {
+        return password;
+    }
 
-  public Email email() {
-    return email;
-  }
+    public Email email() {
+        return email;
+    }
 
-  public Phone phone() {
-    return phone;
-  }
+    public Phone phone() {
+        return phone;
+    }
 
-  public Cash cash() {
-    return cash;
-  }
+    public Cash cash() {
+        return cash;
+    }
 
-  public Avatar avatar() {
-    return avatar;
-  }
+    public Avatar avatar() {
+        return avatar;
+    }
 
-  public AuthMethod authMethod() {
-    return authMethod;
-  }
+    public AuthMethod authMethod() {
+        return authMethod;
+    }
 
-  public Set<CryptoBalance> cryptoBalances() {
-    return cryptoBalances;
-  }
+    public Set<CryptoBalance> cryptoBalances() {
+        return cryptoBalances;
+    }
 
-  public Set<Activity> activities() {
-    return activities;
-  }
+    public Set<Activity> activities() {
+        return activities;
+    }
 
-  public Set<Transaction> transactions() {
-    return transactions;
-  }
+    public Set<Transaction> transactions() {
+        return transactions;
+    }
 
-  public Set<Message> messages() {
-    return messages;
-  }
+    public Set<Message> messages() {
+        return messages;
+    }
 }
