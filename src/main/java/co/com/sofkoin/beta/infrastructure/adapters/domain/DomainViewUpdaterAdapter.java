@@ -152,6 +152,10 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                                                 userView.increaseCashBalance(ev.getCash());
                                             }
 
+                                            if(cryptoView.getAmount().equals(0.0)) {
+                                              userView.getCryptos().remove(cryptoView);
+                                            }
+
                                             userView.addTransaction(transactionView);
 
                                             return userView;
@@ -233,6 +237,10 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                     } else {
                         user.increaseCashBalance(ev.getCash());
                         cryptoView.decreaseCryptoAmount(ev.getCryptoAmount());
+                    }
+
+                    if(cryptoView.getAmount().equals(0.0)) {
+                      user.getCryptos().remove(cryptoView);
                     }
 
                     user.addTransaction(transactionView);
