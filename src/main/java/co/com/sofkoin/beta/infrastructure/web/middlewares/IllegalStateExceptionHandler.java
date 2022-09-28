@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class IllegalStateExceptionHandler {
 
   @ExceptionHandler({ IllegalStateException.class })
-  public ResponseEntity<Object> illegalStateExceptionHandler(IllegalArgumentException exception) {
+  public ResponseEntity<Object> illegalStateExceptionHandler(IllegalStateException exception) {
     HashMap<String, Object> body = new HashMap<>();
     body.put("errorMessage", exception.getMessage());
 

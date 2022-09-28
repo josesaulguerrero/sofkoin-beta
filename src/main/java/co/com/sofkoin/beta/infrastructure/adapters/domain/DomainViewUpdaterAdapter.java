@@ -74,8 +74,11 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
         super.addUpdater((P2PTransactionCommitted event) ->
                 Mono.just(event)
                         .doOnNext(ev -> {
-                            commitP2PTransaction(ev, ev.getBuyerId(), TransactionTypes.BUY);
-                            commitP2PTransaction(ev, ev.getSellerId(), TransactionTypes.SELL);
+                            if (ev.getTransactionType().equals(TransactionTypes.BUY.name())) {
+                                commitP2PTransaction(ev, ev.getBuyerId(), TransactionTypes.BUY);
+                            } else if (ev.getTransactionType().equals(TransactionTypes.SELL.name())) {
+                                commitP2PTransaction(ev, ev.getSellerId(), TransactionTypes.SELL);
+                            }
                         }).subscribe());
 
         super.addUpdater((P2POfferDeleted event) -> {

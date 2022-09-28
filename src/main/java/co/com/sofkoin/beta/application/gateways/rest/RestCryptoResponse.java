@@ -1,13 +1,11 @@
 package co.com.sofkoin.beta.application.gateways.rest;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
+@ToString
 @NoArgsConstructor
-public class RestCryptoResponse extends HashMap<String, Map<String, Double>> {
-
-
-}
+@EqualsAndHashCode(callSuper = true)
+public class RestCryptoResponse extends HashMap<String, Map<String, Double>> {}
