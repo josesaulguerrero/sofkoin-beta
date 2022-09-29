@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TransactionView extends View {
     private String transactionId;
+    private String userId;
     private String type;
     private String CryptoSymbol;
     private Double cryptoAmount;

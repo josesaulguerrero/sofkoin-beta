@@ -134,6 +134,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                                         .map(userView -> {
                                             TransactionView transactionView = new TransactionView(
                                                     ev.getTransactionId(),
+                                                    ev.getBuyerId(),
                                                     ev.getTransactionType(),
                                                     ev.getCryptoSymbol(),
                                                     ev.getCryptoAmount(),
@@ -173,6 +174,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
 
                                             TransactionView transactionView = new TransactionView(
                                                     new TransactionID().value(),
+                                                    ev.getUserId(),
                                                     TransactionTypes.FUND.name(),
                                                     "USD",
                                                     ev.getCashAmount(),
@@ -221,6 +223,7 @@ public class DomainViewUpdaterAdapter extends DomainUpdater {
                 .flatMap(user -> {
                     TransactionView transactionView = new TransactionView(
                             ev.getTransactionId(),
+                            userId,
                             ev.getTransactionType(),
                             ev.getCryptoSymbol(),
                             ev.getCryptoAmount(),
